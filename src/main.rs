@@ -1,9 +1,5 @@
-mod bin;
-mod heapq;
-mod kk;
-
-use bin::{best_fit_decreasing, first_fit_decreasing};
-use kk::kk_partition;
+use seq_len_balance::bin::{best_fit_decreasing, first_fit_decreasing};
+use seq_len_balance::kk::kk_partition;
 
 fn main() {
     // let mut heap = MaxHeap::from_vec(vec![3, 1, 4, 1, 5, 9, 2, 6]);

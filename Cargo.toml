@@ -3,4 +3,14 @@ name = "seq-len-balance-rs"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "seq_len_balance"
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "seq-len-balance-rs"
+path = "src/main.rs"
+
 [dependencies]
+pyo3 = { version = "0.28", features = ["extension-module"] }
+ordered-float = "5"
