@@ -270,7 +270,7 @@ if __name__ == "__main__":
     BENCHMARK_DIR = pathlib.Path(__file__).parent / "benchmark"
     BENCHMARK_DIR.mkdir(exist_ok=True)
 
-    SIZES = [10_000, 100_000, 500_000, 1_000_000, 2_000_000, 4_000_000]
+    SIZES = [10_000, 100_000, 500_000, 1_000_000, 2_000_000, 4_000_000, 10_000_000]
     K = 4
     REPEATS = 3  # average over this many runs to reduce noise
 
