@@ -6,7 +6,6 @@ use bin::{best_fit_decreasing, first_fit_decreasing};
 use kk::kk_partition;
 
 fn main() {
-    // --- heapq demo ---
     // let mut heap = MaxHeap::from_vec(vec![3, 1, 4, 1, 5, 9, 2, 6]);
 
     // println!("peek: {:?}", heap.peek());
@@ -22,7 +21,6 @@ fn main() {
     // }
     // println!();
 
-    // --- kk_partition demo ---
     println!("\n--- kk_partition (integers) ---");
     let items: Vec<i64> = vec![8, 7, 6, 5, 4];
     let p = kk_partition(items, 3);
@@ -37,7 +35,7 @@ fn main() {
 
     println!("\n--- first_fit_decreasing (capacity=10) ---");
     let ffd_items: Vec<u32> = vec![6, 3, 4, 5, 2, 7, 1];
-    let ffd = first_fit_decreasing(ffd_items, 10);
+    let ffd = first_fit_decreasing(ffd_items, Some(10));
     print!("{ffd}");
     println!(
         "bins used: {}  total waste: {}",
@@ -47,7 +45,7 @@ fn main() {
 
     println!("\n--- best_fit_decreasing (capacity=10) ---");
     let bfd_items: Vec<u32> = vec![6, 3, 4, 5, 2, 7, 1];
-    let bfd = best_fit_decreasing(bfd_items, 10);
+    let bfd = best_fit_decreasing(bfd_items, Some(10));
     print!("{bfd}");
     println!(
         "bins used: {}  total waste: {}",

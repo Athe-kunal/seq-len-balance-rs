@@ -51,6 +51,6 @@ where
         bins,
         sums,
         remaining,
-        capacity: T::default(),
+        capacity: None,
     }
 }

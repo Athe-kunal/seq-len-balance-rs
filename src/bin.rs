@@ -1,12 +1,17 @@
 use std::fmt;
 use std::ops::{Add, Sub};
 
+/// Unified result of a bin packing or partitioning algorithm.
+///
+/// - `capacity`: `Some(limit)` for bin packing (FFD/BFD), `None` for unconstrained partitioning (KK).
+/// - `remaining[i]`: unused space in bin i; zero for partitioning results.
+/// - `sums[i]`: total item weight assigned to bin/group i.
 #[derive(Debug)]
 pub struct BinPacking<T> {
     pub bins: Vec<Vec<T>>,
     pub sums: Vec<T>,
     pub remaining: Vec<T>,
-    pub capacity: T,
+    pub capacity: Option<T>,
 }
 
 impl<T> BinPacking<T>
@@ -47,7 +52,10 @@ impl<T: fmt::Display> fmt::Display for BinPacking<T> {
             .zip(self.remaining.iter())
             .enumerate()
         {
-            write!(f, "Bin {i} (sum={sum}, remaining={rem}): [")?;
+            match &self.capacity {
+                Some(_) => write!(f, "Bin {i} (sum={sum}, remaining={rem}): [")?,
+                None => write!(f, "Bin {i} (sum={sum}): [")?,
+            }
             for (j, item) in bin.iter().enumerate() {
                 if j > 0 {
                     write!(f, ", ")?;
@@ -65,13 +73,14 @@ impl<T: fmt::Display> fmt::Display for BinPacking<T> {
 /// Sorts items descending, then for each item tries bins in order (0, 1, 2, ...)
 /// and places it in the **first** bin with enough remaining capacity.
 /// Opens a new bin only when no existing bin fits.
-///
-/// # Panics
-/// Panics if any item exceeds `capacity`.
-pub fn first_fit_decreasing<T>(mut items: Vec<T>, capacity: T) -> BinPacking<T>
+/// Capacity defaults to the sum of all items when not provided.
+pub fn first_fit_decreasing<T>(mut items: Vec<T>, capacity: Option<T>) -> BinPacking<T>
 where
     T: Ord + Add<Output = T> + Sub<Output = T> + Default + Clone,
 {
+    let capacity = capacity
+        .unwrap_or_else(|| items.iter().cloned().fold(T::default(), |acc, x| acc + x));
+
     items.sort_unstable_by(|a, b| b.cmp(a));
 
     let mut bins: Vec<Vec<T>> = Vec::new();
@@ -106,7 +115,7 @@ where
         bins,
         sums,
         remaining,
-        capacity,
+        capacity: Some(capacity),
     }
 }
 
@@ -116,13 +125,14 @@ where
 /// **minimum remaining capacity** that still fits the item (tightest fit).
 /// This leaves larger gaps available for larger future items.
 /// Opens a new bin only when no existing bin fits.
-///
-/// # Panics
-/// Panics if any item exceeds `capacity`.
-pub fn best_fit_decreasing<T>(mut items: Vec<T>, capacity: T) -> BinPacking<T>
+/// Capacity defaults to the sum of all items when not provided.
+pub fn best_fit_decreasing<T>(mut items: Vec<T>, capacity: Option<T>) -> BinPacking<T>
 where
     T: Ord + Add<Output = T> + Sub<Output = T> + Default + Clone,
 {
+    let capacity = capacity
+        .unwrap_or_else(|| items.iter().cloned().fold(T::default(), |acc, x| acc + x));
+
     items.sort_unstable_by(|a, b| b.cmp(a));
 
     let mut bins: Vec<Vec<T>> = Vec::new();
@@ -158,6 +168,6 @@ where
         bins,
         sums,
         remaining,
-        capacity,
+        capacity: Some(capacity),
     }
 }
