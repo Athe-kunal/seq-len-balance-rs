@@ -1,6 +1,6 @@
+use crate::bin::BinPacking;
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
-use std::fmt;
 use std::ops::Add;
 
 // [8,7,6,5,4]
@@ -24,40 +24,7 @@ use std::ops::Add;
 // [4 | 0 | 0]
 // [(8,4) | 11 | 12] -> [(8,4) | (6,5) | (7,5) ]
 
-#[derive(Debug)]
-pub struct Partition<T> {
-    pub groups: Vec<Vec<T>>,
-    pub sums: Vec<T>,
-}
-
-impl<T> Partition<T>
-where
-    T: Ord + Clone + std::ops::Sub<Output = T>,
-{
-    pub fn imbalance(&self) -> T {
-        let max = self.sums.iter().max().unwrap().clone();
-        let min = self.sums.iter().min().unwrap().clone();
-        max - min
-    }
-}
-
-impl<T: fmt::Display> fmt::Display for Partition<T> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for (i, (group, sum)) in self.groups.iter().zip(self.sums.iter()).enumerate() {
-            write!(f, "Group {i} (sum={sum}): [")?;
-            for (j, item) in group.iter().enumerate() {
-                if j > 0 {
-                    write!(f, ", ")?;
-                }
-                write!(f, "{item}")?;
-            }
-            writeln!(f, "]")?;
-        }
-        Ok(())
-    }
-}
-
-pub fn kk_partition<T>(mut items: Vec<T>, k: usize) -> Partition<T>
+pub fn kk_partition<T>(mut items: Vec<T>, k: usize) -> BinPacking<T>
 where
     T: Ord + Add<Output = T> + Default + Clone,
 {
@@ -65,19 +32,25 @@ where
     // placing large items first improves balancing.
     items.sort_unstable_by(|a, b| b.cmp(a));
 
-    let mut groups: Vec<Vec<T>> = vec![vec![]; k];
+    let mut bins: Vec<Vec<T>> = vec![vec![]; k];
     let mut sums: Vec<T> = vec![T::default(); k];
-    // BinaryHeap<Reverse... is for min heap
+    // BinaryHeap<Reverse<...>> gives min-heap behaviour.
     let mut min_heap: BinaryHeap<Reverse<(T, usize)>> =
         (0..k).map(|i| Reverse((T::default(), i))).collect();
 
     for item in items {
         let Reverse((min_sum, idx)) = min_heap.pop().unwrap();
         let new_sum = min_sum + item.clone();
-        groups[idx].push(item);
+        bins[idx].push(item);
         sums[idx] = new_sum.clone();
         min_heap.push(Reverse((new_sum, idx)));
     }
 
-    Partition { groups, sums }
+    let remaining = vec![T::default(); k];
+    BinPacking {
+        bins,
+        sums,
+        remaining,
+        capacity: T::default(),
+    }
 }

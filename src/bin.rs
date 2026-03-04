@@ -1,21 +1,32 @@
 use std::fmt;
 use std::ops::{Add, Sub};
 
-/// Result of a bin packing algorithm.
 #[derive(Debug)]
 pub struct BinPacking<T> {
     pub bins: Vec<Vec<T>>,
+    pub sums: Vec<T>,
     pub remaining: Vec<T>,
     pub capacity: T,
 }
 
-impl<T: Clone + Sub<Output = T>> BinPacking<T> {
-    /// Number of bins used.
+impl<T> BinPacking<T>
+where
+    T: Ord + Clone + Sub<Output = T>,
+{
+    /// Number of bins / groups used.
     pub fn num_bins(&self) -> usize {
         self.bins.len()
     }
 
-    /// Total wasted space across all bins.
+    /// Difference between the largest and smallest bin sum.
+    pub fn imbalance(&self) -> T {
+        let max = self.sums.iter().max().unwrap().clone();
+        let min = self.sums.iter().min().unwrap().clone();
+        max - min
+    }
+
+    /// Total wasted space across all bins (sum of `remaining`).
+    /// For partitioning results this is always zero.
     pub fn waste(&self) -> T
     where
         T: Default + Add<Output = T>,
@@ -27,10 +38,16 @@ impl<T: Clone + Sub<Output = T>> BinPacking<T> {
     }
 }
 
-impl<T: fmt::Display + Clone + Sub<Output = T>> fmt::Display for BinPacking<T> {
+impl<T: fmt::Display> fmt::Display for BinPacking<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for (i, (bin, rem)) in self.bins.iter().zip(self.remaining.iter()).enumerate() {
-            write!(f, "Bin {i} (remaining={rem}): [")?;
+        for (i, ((bin, sum), rem)) in self
+            .bins
+            .iter()
+            .zip(self.sums.iter())
+            .zip(self.remaining.iter())
+            .enumerate()
+        {
+            write!(f, "Bin {i} (sum={sum}, remaining={rem}): [")?;
             for (j, item) in bin.iter().enumerate() {
                 if j > 0 {
                     write!(f, ", ")?;
@@ -58,13 +75,11 @@ where
     items.sort_unstable_by(|a, b| b.cmp(a));
 
     let mut bins: Vec<Vec<T>> = Vec::new();
+    let mut sums: Vec<T> = Vec::new();
     let mut remaining: Vec<T> = Vec::new();
 
     for item in items {
-        assert!(
-            item <= capacity,
-            "item exceeds bin capacity"
-        );
+        assert!(item <= capacity, "item exceeds bin capacity");
 
         // First bin with enough room.
         let target = bins
@@ -76,16 +91,23 @@ where
         match target {
             Some(i) => {
                 remaining[i] = remaining[i].clone() - item.clone();
+                sums[i] = sums[i].clone() + item.clone();
                 bins[i].push(item);
             }
             None => {
                 remaining.push(capacity.clone() - item.clone());
+                sums.push(item.clone());
                 bins.push(vec![item]);
             }
         }
     }
 
-    BinPacking { bins, remaining, capacity }
+    BinPacking {
+        bins,
+        sums,
+        remaining,
+        capacity,
+    }
 }
 
 /// Best Fit Decreasing bin packing.
@@ -104,6 +126,7 @@ where
     items.sort_unstable_by(|a, b| b.cmp(a));
 
     let mut bins: Vec<Vec<T>> = Vec::new();
+    let mut sums: Vec<T> = Vec::new();
     let mut remaining: Vec<T> = Vec::new();
 
     for item in items {
@@ -120,14 +143,21 @@ where
         match best_idx {
             Some(i) => {
                 remaining[i] = remaining[i].clone() - item.clone();
+                sums[i] = sums[i].clone() + item.clone();
                 bins[i].push(item);
             }
             None => {
                 remaining.push(capacity.clone() - item.clone());
+                sums.push(item.clone());
                 bins.push(vec![item]);
             }
         }
     }
 
-    BinPacking { bins, remaining, capacity }
+    BinPacking {
+        bins,
+        sums,
+        remaining,
+        capacity,
+    }
 }
