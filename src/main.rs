@@ -1,10 +1,8 @@
-mod bfd;
-mod ffd;
+mod bin;
 mod heapq;
 mod kk;
 
-use bfd::best_fit_decreasing;
-use ffd::first_fit_decreasing;
+use bin::{best_fit_decreasing, first_fit_decreasing};
 use kk::kk_partition;
 
 fn main() {
@@ -41,11 +39,19 @@ fn main() {
     let ffd_items: Vec<u32> = vec![6, 3, 4, 5, 2, 7, 1];
     let ffd = first_fit_decreasing(ffd_items, 10);
     print!("{ffd}");
-    println!("bins used: {}  total waste: {}", ffd.num_bins(), ffd.waste());
+    println!(
+        "bins used: {}  total waste: {}",
+        ffd.num_bins(),
+        ffd.waste()
+    );
 
     println!("\n--- best_fit_decreasing (capacity=10) ---");
     let bfd_items: Vec<u32> = vec![6, 3, 4, 5, 2, 7, 1];
     let bfd = best_fit_decreasing(bfd_items, 10);
     print!("{bfd}");
-    println!("bins used: {}  total waste: {}", bfd.num_bins(), bfd.waste());
+    println!(
+        "bins used: {}  total waste: {}",
+        bfd.num_bins(),
+        bfd.waste()
+    );
 }

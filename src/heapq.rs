@@ -1,10 +1,9 @@
 #[derive(Debug, Default)]
-pub struct MaxHeap<T: Ord> {
+pub struct MinHeap<T: Ord> {
     data: Vec<T>,
 }
 
-impl<T: Ord> MaxHeap<T> {
-    
+impl<T: Ord> MinHeap<T> {
     pub fn len(&self) -> usize {
         self.data.len()
     }
@@ -13,12 +12,11 @@ impl<T: Ord> MaxHeap<T> {
         self.data.is_empty()
     }
     // used after inserting a new element
-    pub fn sift_up(&mut self, mut i: usize){
-        
-        while i  > 0 {
-            let parent= (i - 1)/2;
+    pub fn sift_up(&mut self, mut i: usize) {
+        while i > 0 {
+            let parent = (i - 1) / 2;
 
-            if self.data[parent] >= self.data[i]{
+            if self.data[parent] <= self.data[i] {
                 break;
             }
             self.data.swap(parent, i);
@@ -26,7 +24,7 @@ impl<T: Ord> MaxHeap<T> {
         }
     }
     // after deleting an element
-    pub fn sift_down(&mut self, mut i: usize){
+    pub fn sift_down(&mut self, mut i: usize) {
         let n = self.data.len();
 
         loop {
@@ -36,20 +34,19 @@ impl<T: Ord> MaxHeap<T> {
             let left = 2 * i + 1;
             let right = 2 * i + 2;
 
-            if left >= n{
+            if left >= n {
                 break;
             }
-            let mut largest = left;
-            if right < n && self.data[right] > self.data[left]{
-                largest = right;
+            let mut smallest = left;
+            if right < n && self.data[right] < self.data[left] {
+                smallest = right;
             }
 
-            if self.data[i] >= self.data[largest]{
+            if self.data[i] <= self.data[smallest] {
                 break;
             }
-            self.data.swap(i, largest);
-            i = largest;
-
+            self.data.swap(i, smallest);
+            i = smallest;
         }
     }
 
@@ -59,14 +56,14 @@ impl<T: Ord> MaxHeap<T> {
         self.sift_up(i);
     }
 
-    pub fn pop(&mut self) -> Option<T>{
+    pub fn pop(&mut self) -> Option<T> {
         if self.data.is_empty() {
-            return None
+            return None;
         }
-        let last  = self.data.len() - 1;
+        let last = self.data.len() - 1;
         self.data.swap(0, last);
         let top = self.data.pop();
-        if !self.data.is_empty(){
+        if !self.data.is_empty() {
             self.sift_down(0);
         }
         top
@@ -76,23 +73,23 @@ impl<T: Ord> MaxHeap<T> {
         self.data.first()
     }
 
-    pub fn from_vec(data: Vec<T>) -> Self{
+    pub fn from_vec(data: Vec<T>) -> Self {
         let mut h = Self { data };
         let n = h.data.len();
-        for i in (0..n/2).rev(){
+        for i in (0..n / 2).rev() {
             h.sift_down(i);
         }
         h
     }
 
-    pub fn with_capacity(cap: usize) -> Self{
-        Self { data: Vec::with_capacity(cap)}
+    pub fn with_capacity(cap: usize) -> Self {
+        Self {
+            data: Vec::with_capacity(cap),
+        }
     }
-    
-
 }
 
-impl<T: Ord + std::fmt::Display> MaxHeap<T> {
+impl<T: Ord + std::fmt::Display> MinHeap<T> {
     pub fn print_tree(&self) {
         if self.data.is_empty() {
             println!("(empty)");

@@ -3,17 +3,27 @@ use std::collections::BinaryHeap;
 use std::fmt;
 use std::ops::Add;
 
-// Step	Item	Smallest bucket	Result buckets (sorted by sum)
-// 1	8	0	[0\|0\|8]
-// 2	7	0	[7\|0\|8] → sort → [0\|7\|8]
-// 3	6	0	[6\|7\|8]
-// 4	5	6	[(6,5)\|7\|8] → sort → [7\|8\|11]
-// 5	4	7	[(4,7)\|8\|11] → final: [11\|8\|11]
+// [8,7,6,5,4]
+// [0 | 0 | 8] -> sort ascending (first element)
+// [7 | 0 | 0] -> sort descending element
+// [7 | 0 | 8] -> sort -> [0 | 7 | 8]
 
-/// Result of a balanced k-way partition.
-///
-/// For `f32`/`f64`, wrap values with `ordered_float::OrderedFloat<f64>` which
-/// implements `Ord` and satisfies the bounds below.
+// [0 | 7 | 8] -> sorted ascending
+// [6 | 0 | 0] -> sorted descending
+// [6 | 7 | 8] -> sort ascending -> [6 | 7 | 8]
+
+// [6 | 7 | 8]
+// [5 | 0 | 0]
+// [(6,5) | 7 | 8] -> sort ascending -> [7 | 8 | 11]
+
+// [7 | 8 | 11]
+// [5 | 0 | 0]
+// [(7,5) | 8 | (6,5)] -> [8 | 11 | 12]
+
+// [8 | 11 | 12]
+// [4 | 0 | 0]
+// [(8,4) | 11 | 12] -> [(8,4) | (6,5) | (7,5) ]
+
 #[derive(Debug)]
 pub struct Partition<T> {
     pub groups: Vec<Vec<T>>,
@@ -24,7 +34,6 @@ impl<T> Partition<T>
 where
     T: Ord + Clone + std::ops::Sub<Output = T>,
 {
-    /// Difference between the largest and smallest group sum.
     pub fn imbalance(&self) -> T {
         let max = self.sums.iter().max().unwrap().clone();
         let min = self.sums.iter().min().unwrap().clone();
@@ -48,30 +57,17 @@ impl<T: fmt::Display> fmt::Display for Partition<T> {
     }
 }
 
-/// Greedy balanced k-way partition (Karmarkar-Karp / LPT style).
-///
-/// Sorts items descending, then assigns each item to the group with the
-/// smallest current sum using a min-heap — this minimises the spread between
-/// the heaviest and lightest groups.
-///
-/// # Type bounds
-/// - `Ord`     — sort items and compare bucket sums in the min-heap
-/// - `Add`     — accumulate group sums
-/// - `Default` — zero value for empty groups (`0` for integers)
-/// - `Clone`   — items move into groups; running sums are cloned
 pub fn kk_partition<T>(mut items: Vec<T>, k: usize) -> Partition<T>
 where
     T: Ord + Add<Output = T> + Default + Clone,
 {
     assert!(k > 0, "k must be at least 1");
-
-    // Largest items first.
+    // placing large items first improves balancing.
     items.sort_unstable_by(|a, b| b.cmp(a));
 
     let mut groups: Vec<Vec<T>> = vec![vec![]; k];
     let mut sums: Vec<T> = vec![T::default(); k];
-
-    // Min-heap of (current_sum, group_index).
+    // BinaryHeap<Reverse... is for min heap
     let mut min_heap: BinaryHeap<Reverse<(T, usize)>> =
         (0..k).map(|i| Reverse((T::default(), i))).collect();
 
