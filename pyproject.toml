@@ -7,7 +7,9 @@ name = "seq-len-balance"
 version = "0.1.0"
 requires-python = ">=3.11"
 description = "Fast sequence-length balancing: KK partition, FFD, and BFD bin packing"
-dependencies = []
+dependencies = [
+    "pyzmq>=27.1.0",
+]
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
@@ -17,6 +19,11 @@ benchmark = [
     "matplotlib>=3.10.8",
     "pytest>=9.0.2",
 ]
+gpus = [
+    "torch",
+    "psutil",
+]
+
 
 [tool.uv]
 dev-dependencies = [
