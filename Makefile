@@ -38,3 +38,6 @@ clean:
 	@echo "🧹 Cleaning build artifacts..."
 	cargo clean
 	rm -rf $(BUILD_DIR) dist build *.egg-info
+
+serve:
+	uv run python zmq_balance_server.py serve --workers $(workers)

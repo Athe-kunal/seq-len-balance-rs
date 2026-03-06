@@ -40,6 +40,16 @@ n=4,000,000  Python:   1405.9 ms   Rust:    144.9 ms
 n=10,000,000  Python:   3577.8 ms   Rust:    377.6 ms
 ```
 
+## Server
+
+Start the ZMQ balance server:
+
+```bash
+make serve
+```
+
+Optionally specify the number of workers (e.g. `make serve workers=4`).
+
 ## Rust in Jupyter (optional)
 
 ```bash
