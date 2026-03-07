@@ -1066,10 +1066,6 @@ wheels = [
 name = "seq-len-balance"
 version = "0.1.0"
 source = { editable = "." }
-dependencies = [
-    { name = "mpi4py" },
-    { name = "pyzmq" },
-]
 
 [package.dev-dependencies]
 benchmark = [
@@ -1085,12 +1081,12 @@ gpus = [
     { name = "psutil" },
     { name = "torch" },
 ]
+zmq-server = [
+    { name = "mpi4py" },
+    { name = "pyzmq" },
+]
 
 [package.metadata]
-requires-dist = [
-    { name = "mpi4py", specifier = ">=4.1.1" },
-    { name = "pyzmq", specifier = ">=27.1.0" },
-]
 
 [package.metadata.requires-dev]
 benchmark = [
@@ -1105,6 +1101,10 @@ dev = [
 gpus = [
     { name = "psutil" },
     { name = "torch" },
+]
+zmq-server = [
+    { name = "mpi4py", specifier = ">=4.1.1" },
+    { name = "pyzmq", specifier = ">=27.1.0" },
 ]
 
 [[package]]

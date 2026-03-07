@@ -7,10 +7,7 @@ name = "seq-len-balance"
 version = "0.1.0"
 requires-python = ">=3.11"
 description = "Fast sequence-length balancing: KK partition, FFD, and BFD bin packing"
-dependencies = [
-    "mpi4py>=4.1.1",
-    "pyzmq>=27.1.0",
-]
+dependencies = []
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
@@ -24,7 +21,10 @@ gpus = [
     "torch",
     "psutil",
 ]
-
+zmq_server = [
+    "mpi4py>=4.1.1",
+    "pyzmq>=27.1.0",
+]
 
 [tool.uv]
 dev-dependencies = [

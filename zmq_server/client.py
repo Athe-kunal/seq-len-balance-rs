@@ -125,8 +125,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--sequences-json",
-        default='["AAAA", "A", "BBBBBBBB", "CCC", "DDDDDD"]',
-        help="JSON array of sequences for the demo client mode.",
+        default="[512, 128, 1024, 256, 768]",
+        help="JSON array of integer lengths or sequences for the demo client mode.",
     )
     parser.add_argument(
         "--algorithm",

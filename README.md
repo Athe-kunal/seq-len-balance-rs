@@ -43,16 +43,36 @@ n=10,000,000  Python:   3577.8 ms   Rust:    377.6 ms
 ## Server
 
 ```bash
-make serve                                           # defaults: all CPUs, karmarkar_karp
+uv sync --group zmq_server 
+```
+
+```bash
+make serve # defaults: all CPUs, karmarkar_karp                                          
 make serve workers=4 algorithm=first_fit_decreasing
 make serve workers=4 algorithm=best_fit_decreasing
 ```
 
-Send a demo request while the server is running:
+Send a request while the server is running:
 
 ```bash
-uv run python -m zmq_server client \
-  --sequences-json '["hello", "hi", "a longer sequence", "yo"]'
+# integer lengths
+uv run python -m zmq_server client --sequences-json '[512, 128, 1024, 256, 768]'
+
+# or raw sequences (strings, lists, etc. — anything with len())
+uv run python -m zmq_server client --sequences-json '["hello", "hi", "a longer one"]'
+```
+
+**Programmatic usage:**
+
+```python
+import asyncio
+from zmq_server import run_client
+
+result = asyncio.run(run_client(
+    frontend_endpoint="tcp://127.0.0.1:5555",
+    sequences=[512, 128, 1024, 256, 768],
+))
+print(result)
 ```
 
 ## Rust in Jupyter (optional)

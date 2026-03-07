@@ -16,6 +16,8 @@ except ImportError:
 
 
 def _length_of_sequence(sequence: Any) -> int:
+    if isinstance(sequence, (int, float)):
+        return int(sequence)
     try:
         return len(sequence)
     except TypeError as exc:
