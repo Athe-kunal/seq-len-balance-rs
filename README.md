@@ -81,3 +81,20 @@ print(result)
 cargo install evcxr_jupyter
 evcxr_jupyter --install
 ```
+
+ROUTER-DEALER DESIGN
+
+```
+CLIENTS
+   │
+   │  (requests)
+   ▼
+ROUTER  ← frontend socket
+   │
+   │   broker logic
+   │   (balance sequences, track requests)
+   │
+DEALER  ← backend socket
+   ▼
+WORKERS
+```
