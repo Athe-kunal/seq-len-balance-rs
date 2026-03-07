@@ -5,7 +5,7 @@ BUILD_DIR    := target/wheels
 
 # ---- Commands ----
 
-.PHONY: help build develop publish clean
+.PHONY: help build develop publish clean serve
 
 help:
 	@echo "Available commands:"
@@ -39,5 +39,10 @@ clean:
 	cargo clean
 	rm -rf $(BUILD_DIR) dist build *.egg-info
 
+workers   ?=
+algorithm ?= karmarkar_karp
+
 serve:
-	uv run python zmq_balance_server.py serve --workers $(workers)
+	uv run python -m zmq_server serve \
+		$(if $(workers),--workers $(workers)) \
+		--algorithm $(algorithm)

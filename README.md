@@ -42,13 +42,18 @@ n=10,000,000  Python:   3577.8 ms   Rust:    377.6 ms
 
 ## Server
 
-Start the ZMQ balance server:
-
 ```bash
-make serve
+make serve                                           # defaults: all CPUs, karmarkar_karp
+make serve workers=4 algorithm=first_fit_decreasing
+make serve workers=4 algorithm=best_fit_decreasing
 ```
 
-Optionally specify the number of workers (e.g. `make serve workers=4`).
+Send a demo request while the server is running:
+
+```bash
+uv run python -m zmq_server client \
+  --sequences-json '["hello", "hi", "a longer sequence", "yo"]'
+```
 
 ## Rust in Jupyter (optional)
 
