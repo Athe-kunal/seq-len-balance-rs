@@ -23,6 +23,7 @@ async def run_client(
     frontend_endpoint: str,
     sequences: list[Any],
 ) -> zmq_datamodels.JsonDict:
+    """Send one balancing request to the frontend endpoint and return the JSON reply."""
     context = zmq.asyncio.Context.instance()
     socket = context.socket(zmq.DEALER)
     socket.setsockopt(zmq.LINGER, 0)
@@ -41,6 +42,7 @@ def _spawn_local_workers(
     worker_devices: list[str],
     backend_endpoint: str,
 ) -> list[Any]:
+    """Start one local worker process per requested device."""
     ctx = get_context("spawn")
     processes: list[Any] = []
     for rank, device in enumerate(worker_devices, start=1):
@@ -60,6 +62,7 @@ def _spawn_local_workers(
 def _run_worker_process(
     *, backend_endpoint: str, worker_rank: int, device: str
 ) -> None:
+    """Run a worker event loop inside a spawned child process."""
     asyncio.run(
         zmq_mp.worker_loop(
             backend_endpoint=backend_endpoint,
@@ -70,6 +73,7 @@ def _run_worker_process(
 
 
 async def run_local_cluster(args: argparse.Namespace) -> None:
+    """Run a local router plus worker processes using parsed CLI arguments."""
     worker_devices, mode_label = zmq_system_specs.resolve_worker_devices(
         args.workers, None
     )
@@ -93,6 +97,7 @@ async def run_local_cluster(args: argparse.Namespace) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Create the CLI argument parser for server and client modes."""
     parser = argparse.ArgumentParser(
         description=(
             "Async ROUTER/DEALER ZeroMQ balancer that partitions sequences by length "
@@ -138,6 +143,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> None:
+    """CLI entrypoint that runs client mode or starts a local/MPI cluster."""
     parser = build_parser()
     args = parser.parse_args()
 
