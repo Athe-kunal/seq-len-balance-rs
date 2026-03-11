@@ -11,6 +11,7 @@ dependencies = []
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
+include = ["seq_len_balance.pyi", "py.typed"]
 
 [dependency-groups]
 benchmark = [

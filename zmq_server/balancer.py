@@ -5,7 +5,11 @@ import math
 from collections import defaultdict, deque
 from typing import Any
 
-from seq_len_balance import bfd, ffd, kk
+from seq_len_balance import (
+    best_fit_decreasing_pack,
+    first_fit_decreasing_pack,
+    karmarkar_karp_partition,
+)
 from zmq_server import datamodels as zmq_datamodels
 from zmq_server import system_specs as zmq_system_specs
 
@@ -37,11 +41,15 @@ def balance_sequences(
     lengths = [float(_length_of_sequence(s)) for s in sequences]
 
     if algorithm == "karmarkar_karp":
-        bins: list[list[float]] = kk(lengths, worker_count)
+        bins: list[list[float]] = karmarkar_karp_partition(lengths, worker_count)
     else:
         # ffd/bfd use bin capacity; target = ceil(total / k) so we get at most k bins
         capacity = math.ceil(sum(lengths) / worker_count)
-        bins = ffd(lengths, capacity) if algorithm == "first_fit_decreasing" else bfd(lengths, capacity)
+        bins = (
+            first_fit_decreasing_pack(lengths, capacity)
+            if algorithm == "first_fit_decreasing"
+            else best_fit_decreasing_pack(lengths, capacity)
+        )
         # pad to worker_count so every worker receives a partition (possibly empty)
         while len(bins) < worker_count:
             bins.append([])

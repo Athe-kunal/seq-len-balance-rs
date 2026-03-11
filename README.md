@@ -13,11 +13,15 @@ maturin develop
 ## Usage
 
 ```python
-from seq_len_balance import kk, ffd, bfd
+from seq_len_balance import (
+    karmarkar_karp_partition,
+    first_fit_decreasing_pack,
+    best_fit_decreasing_pack,
+)
 
-print(kk([8, 7, 6, 5, 4], 2))   # -> [[8, 5], [7, 4], [6]]
-print(ffd([6, 3, 4, 5, 2, 7, 1], 10))  # -> [[7, 3], [6, 4], [5, 2, 1]]
-print(bfd([6, 3, 4, 5, 2, 7, 1], 10))  # -> [[7, 2, 1], [6, 4], [5, 3]]
+print(karmarkar_karp_partition([8, 7, 6, 5, 4], 2))   # -> [[8, 5], [7, 4], [6]]
+print(first_fit_decreasing_pack([6, 3, 4, 5, 2, 7, 1], 10))  # -> [[7, 3], [6, 4], [5, 2, 1]]
+print(best_fit_decreasing_pack([6, 3, 4, 5, 2, 7, 1], 10))  # -> [[7, 2, 1], [6, 4], [5, 3]]
 ```
 
 ## Benchmark
