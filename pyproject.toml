@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "seq-len-balance"
-version = "0.1.0"
+version = "0.1.1"
 requires-python = ">=3.11"
 description = "Fast sequence-length balancing: KK partition, FFD, and BFD bin packing"
 dependencies = []
