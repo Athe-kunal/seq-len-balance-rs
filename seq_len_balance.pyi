@@ -25,3 +25,24 @@ def ffd(items: Sequence[float], k: float) -> list[list[float]]:
 
 def bfd(items: Sequence[float], k: float) -> list[list[float]]:
     """Backward-compatible alias for :func:`best_fit_decreasing_pack`."""
+
+
+def karmarkar_karp(
+    seqlen_list: Sequence[int], k_partitions: int, equal_size: bool = False
+) -> list[list[int]]:
+    """True Karmarkar-Karp differencing; returns original indices per partition.
+
+    When ``equal_size`` is True, every partition has exactly
+    ``len(seqlen_list) // k_partitions`` items (requires exact divisibility).
+    """
+
+
+def get_seqlen_balanced_partitions(
+    seqlen_list: Sequence[int], k_partitions: int, equal_size: bool = False
+) -> list[list[int]]:
+    """``karmarkar_karp`` plus validation and bookkeeping.
+
+    Guarantees exactly ``k_partitions`` non-empty partitions, each index of
+    ``seqlen_list`` assigned exactly once, and each partition's indices sorted
+    ascending.
+    """

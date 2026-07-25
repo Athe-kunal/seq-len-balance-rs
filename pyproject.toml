@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "seq-len-balance"
-version = "0.1.1"
+version = "0.1.2"
 requires-python = ">=3.11"
 description = "Fast sequence-length balancing: KK partition, FFD, and BFD bin packing"
 dependencies = []
@@ -32,4 +32,5 @@ dev-dependencies = [
     "matplotlib>=3.10.8",
     "maturin>=1.0,<2.0",
     "numpy>=2.4.2",
+    "pytest>=9.0.2",
 ]

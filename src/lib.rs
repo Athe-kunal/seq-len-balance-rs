@@ -1,4 +1,5 @@
 pub mod bin;
+pub mod differencing;
 pub mod heapq;
 pub mod kk;
 
@@ -6,6 +7,7 @@ use bin::{best_fit_decreasing, first_fit_decreasing};
 use kk::kk_partition;
 
 use ordered_float::OrderedFloat;
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3::types::PySequence;
 
@@ -83,6 +85,30 @@ fn py_bfd(items: &Bound<'_, PySequence>, k: f64) -> PyResult<Vec<Vec<f64>>> {
     py_best_fit_decreasing_pack(items, k)
 }
 
+#[pyfunction]
+#[pyo3(name = "karmarkar_karp", signature = (seqlen_list, k_partitions, equal_size=false))]
+/// True Karmarkar-Karp largest-differencing partition; returns original indices per partition.
+fn py_karmarkar_karp(
+    seqlen_list: Vec<i64>,
+    k_partitions: usize,
+    equal_size: bool,
+) -> PyResult<Vec<Vec<usize>>> {
+    differencing::karmarkar_karp_indices(&seqlen_list, k_partitions, equal_size)
+        .map_err(PyValueError::new_err)
+}
+
+#[pyfunction]
+#[pyo3(name = "get_seqlen_balanced_partitions", signature = (seqlen_list, k_partitions, equal_size=false))]
+/// `karmarkar_karp` plus validation: exactly `k_partitions` non-empty, fully-covering, sorted partitions.
+fn py_get_seqlen_balanced_partitions(
+    seqlen_list: Vec<i64>,
+    k_partitions: usize,
+    equal_size: bool,
+) -> PyResult<Vec<Vec<usize>>> {
+    differencing::get_seqlen_balanced_partitions(&seqlen_list, k_partitions, equal_size)
+        .map_err(PyValueError::new_err)
+}
+
 #[pymodule]
 fn seq_len_balance(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(py_karmarkar_karp_partition, m)?)?;
@@ -91,5 +117,7 @@ fn seq_len_balance(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(py_kk, m)?)?;
     m.add_function(wrap_pyfunction!(py_ffd, m)?)?;
     m.add_function(wrap_pyfunction!(py_bfd, m)?)?;
+    m.add_function(wrap_pyfunction!(py_karmarkar_karp, m)?)?;
+    m.add_function(wrap_pyfunction!(py_get_seqlen_balanced_partitions, m)?)?;
     Ok(())
 }
